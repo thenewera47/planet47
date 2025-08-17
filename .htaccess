@@ -1,8 +1,16 @@
-# Enable PHP index
-DirectoryIndex index.php
+# Route everything to index.php
+Options -Indexes
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]
 
-# Security
-<FilesMatch "\.(json|log)$">
-    Order allow,deny
-    Deny from all
+# Prevent public access to data/log files
+<FilesMatch "^(users\.json|error\.log)$">
+  Require all denied
 </FilesMatch>
+
+# PHP error logging to file
+php_flag display_errors Off
+php_flag log_errors On
+php_value error_log /var/www/html/error.log
