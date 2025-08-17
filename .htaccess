@@ -1,0 +1,8 @@
+# Enable rewrite engine
+RewriteEngine On
+
+# Deny direct access to users.json and error.log
+<FilesMatch "^(users\.json|error\.log)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>

@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  telegram-bot:
+    build: .
+    container_name: telegram_bot
+    ports:
+      - "8080:80"
+    restart: always
+    volumes:
+      - ./users.json:/var/www/html/users.json
+      - ./error.log:/var/www/html/error.log
