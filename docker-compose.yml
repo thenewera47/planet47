@@ -1,9 +1,12 @@
-version: '3.8'
+version: "3.8"
 services:
-  planet47bot:
+  planet47:
     build: .
+    container_name: planet47_bot
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+      - PORT=8080
     ports:
-      - "8080:80"
+      - "8080:8080"
     volumes:
       - .:/var/www/html
-    restart: always
