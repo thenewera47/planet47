@@ -17,7 +17,7 @@ define('API_URL', 'https://api.telegram.org/bot' . $BOT_TOKEN . '/');
 define('USERS_FILE', __DIR__ . '/users.json');
 define('ERROR_LOG', __DIR__ . '/error.log');
 define('DONATE_UPI', 'BHARATPE.8Y0Z0M5P0J89642@fbpe');
-define('DONATE_QR_URL', 'https://github.com/thenewera47/planet47/blob/main/bharatpe-donate-qr.png');
+define('DONATE_QR_URL', 'https://github.com/thenewera47/planet47/blob/main/bharatpe-donate-qr.png?raw=true');
 define('BOT_LINK', 'https://t.me/planet47_bot');
 
 // ---------- UTIL ----------
@@ -317,4 +317,5 @@ try {
     http_response_code(500);
     echo 'Error';
 }
+
 
