@@ -1,206 +1,140 @@
 <?php
 // =============================
-// Telegram Bot in one file
+// Planet 47 Telegram Bot (PHP)
 // =============================
 
-// Bot configuration
-define('BOT_TOKEN', 'Place_Your_Token_Here');
+// --- CONFIG ---
+define('BOT_TOKEN', 'Place_Your_Token_Here'); 
 define('API_URL', 'https://api.telegram.org/bot' . BOT_TOKEN . '/');
-define('USERS_FILE', __DIR__ . '/users.json');
-define('ERROR_LOG', __DIR__ . '/error.log');
+define('BOT_LINK', 'https://t.me/planet47_bot');
+define('DONATE_UPI', 'BHARATPE.8Y0Z0M5P0J89642@fbpe');
 
-// =============================
-// Error logging
-// =============================
-function logError($message) {
-    $timestamp = date('Y-m-d H:i:s');
-    file_put_contents(ERROR_LOG, "[$timestamp] $message\n", FILE_APPEND);
+// --- HELPERS ---
+function flashy($text) {
+    return "✨💫 $text 💫✨";
 }
 
-// =============================
-// Data management
-// =============================
-function loadUsers() {
-    try {
-        if (!file_exists(USERS_FILE)) {
-            file_put_contents(USERS_FILE, json_encode([]));
-        }
-        return json_decode(file_get_contents(USERS_FILE), true) ?: [];
-    } catch (Exception $e) {
-        logError("Load users failed: " . $e->getMessage());
-        return [];
-    }
+function divider() {
+    return "━━━━━━━━━━━━━━━━━━━━━━";
 }
 
-function saveUsers($users) {
-    try {
-        file_put_contents(USERS_FILE, json_encode($users, JSON_PRETTY_PRINT));
-        return true;
-    } catch (Exception $e) {
-        logError("Save users failed: " . $e->getMessage());
-        return false;
-    }
-}
-
-// =============================
-// Messaging helpers
-// =============================
-function sendMessage($chat_id, $text, $keyboard = null) {
-    try {
-        $params = [
-            'chat_id' => $chat_id,
-            'text' => $text,
-            'parse_mode' => 'HTML'
-        ];
-
-        if ($keyboard) {
-            $params['reply_markup'] = json_encode([
-                'inline_keyboard' => $keyboard
-            ]);
-        }
-
-        $url = API_URL . 'sendMessage?' . http_build_query($params);
-        file_get_contents($url);
-        return true;
-    } catch (Exception $e) {
-        logError("Send message failed: " . $e->getMessage());
-        return false;
-    }
-}
-
-function getMainKeyboard() {
-    return [
-        [['text' => '💰 Earn', 'callback_data' => 'earn'], ['text' => '💳 Balance', 'callback_data' => 'balance']],
-        [['text' => '🏆 Leaderboard', 'callback_data' => 'leaderboard'], ['text' => '👥 Referrals', 'callback_data' => 'referrals']],
-        [['text' => '🏧 Withdraw', 'callback_data' => 'withdraw'], ['text' => '❓ Help', 'callback_data' => 'help']]
+function sendMessage($chat_id, $text, $parse = "Markdown") {
+    $params = [
+        'chat_id' => $chat_id,
+        'text' => $text,
+        'parse_mode' => $parse
     ];
+    file_get_contents(API_URL . "sendMessage?" . http_build_query($params));
 }
 
-// =============================
-// Update processor
-// =============================
+function sendPhoto($chat_id, $photo, $caption = "") {
+    $params = [
+        'chat_id' => $chat_id,
+        'photo' => $photo,
+        'caption' => $caption,
+        'parse_mode' => "Markdown"
+    ];
+    file_get_contents(API_URL . "sendPhoto?" . http_build_query($params));
+}
+
+// --- COMMAND HANDLERS ---
+function cmd_start($chat_id) {
+    $msg = "🚀 " . flashy("WELCOME TO PLANET 47 BOT") . " 🚀\n\n"
+         . "🌎 I’m your *Personal Assistant Bot* 🤖\n"
+         . "💡 Type /help to see what I can do for you!\n\n"
+         . divider() . "\n"
+         . "🔥 *Your commands are ready to launch!* 🔥";
+    sendMessage($chat_id, $msg);
+}
+
+function cmd_help($chat_id) {
+    $msg = f"📜 " . flashy("COMMANDS LIST") . " 📜\n\n"
+         . "/start - 🌟 Welcome message\n"
+         . "/help - 📖 Command list\n"
+         . "/donate - 💝 Donate via BharatPe\n"
+         . "/status - 🟢 Bot status\n"
+         . "/crypto - ₿ Top 10 Cryptos\n"
+         . "/share - 📈 Indian Market Indices\n\n"
+         . "⚡ Tip: Type any command anytime to use.";
+    sendMessage($chat_id, $msg);
+}
+
+function cmd_donate($chat_id) {
+    $msg = "🙏 " . flashy("SUPPORT PLANET 47") . " 🙏\n\n"
+         . "💵 *Donate via BharatPe UPI ID:*\n"
+         . "`" . DONATE_UPI . "`\n\n"
+         . "📲 *Scan the QR Code below 👇*\n"
+         . "🔥 Every contribution keeps this bot alive! 🔥";
+    sendMessage($chat_id, $msg);
+    sendPhoto($chat_id, "https://i.ibb.co/HHtQpMq/bharatpe-donate-qr.png");
+}
+
+function cmd_status($chat_id) {
+    $msg = "✅ " . flashy("BOT STATUS") . " ✅\n\n"
+         . "🟢 *Planet 47 Bot is ONLINE & Running 24/7!*\n"
+         . "⚡ Powered by Replit + UptimeRobot 🚀";
+    sendMessage($chat_id, $msg);
+}
+
+function cmd_crypto($chat_id) {
+    // 🔹 You can replace with real API fetch (like CoinGecko / Binance)
+    $msg = "₿ " . flashy("TOP 10 CRYPTOS") . " ₿\n\n"
+         . "1. BTC - ₹24,00,000 (BUY → Call)\n"
+         . "2. ETH - ₹1,60,000 (SELL → Put)\n"
+         . "3. BNB - ₹23,000 (BUY → Call)\n"
+         . "4. SOL - ₹7,200 (SELL → Put)\n"
+         . "5. XRP - ₹52 (BUY → Call)\n"
+         . "6. ADA - ₹30 (SELL → Put)\n"
+         . "7. DOGE - ₹6.2 (BUY → Call)\n"
+         . "8. TON - ₹520 (SELL → Put)\n"
+         . "9. DOT - ₹450 (BUY → Call)\n"
+         . "10. TRX - ₹9 (SELL → Put)\n\n"
+         . divider() . "\n"
+         . "📊 *Signals based on SuperTrend Indicator*";
+    sendMessage($chat_id, $msg);
+}
+
+function cmd_share($chat_id) {
+    $msg = "📈 " . flashy("INDIAN MARKET INDICES") . " 📈\n\n"
+         . "• NIFTY50 (^NSEI)\n"
+         . "• BANKNIFTY (^NSEBANK)\n"
+         . "• FINNIFTY (NIFTY_FIN_SERVICE.NS)\n"
+         . "• MIDCAP NIFTY (^NSEMDCP50)\n"
+         . "• BSE SENSEX (^BSESN)\n"
+         . "• BANKEX (BSE BANKEX)\n\n"
+         . divider() . "\n"
+         . "⚡ *Live data integration coming soon!*";
+    sendMessage($chat_id, $msg);
+}
+
+// --- UPDATE HANDLER ---
 function processUpdate($update) {
-    $users = loadUsers();
+    if (!isset($update['message'])) return;
+    $chat_id = $update['message']['chat']['id'];
+    $text = trim($update['message']['text'] ?? '');
 
-    if (isset($update['message'])) {
-        $chat_id = $update['message']['chat']['id'];
-        $text = trim($update['message']['text'] ?? '');
-
-        // Create new user if not exists
-        if (!isset($users[$chat_id])) {
-            $users[$chat_id] = [
-                'balance' => 0,
-                'last_earn' => 0,
-                'referrals' => 0,
-                'ref_code' => substr(md5($chat_id . time()), 0, 8),
-                'referred_by' => null
-            ];
-        }
-
-        if (strpos($text, '/start') === 0) {
-            $ref = explode(' ', $text)[1] ?? null;
-            if ($ref && !$users[$chat_id]['referred_by']) {
-                foreach ($users as $id => $user) {
-                    if ($user['ref_code'] === $ref && $id != $chat_id) {
-                        $users[$chat_id]['referred_by'] = $id;
-                        $users[$id]['referrals']++;
-                        $users[$id]['balance'] += 50; // Referral bonus
-                        sendMessage($id, "🎉 New referral! +50 points bonus!");
-                        break;
-                    }
-                }
-            }
-
-            $msg = "Welcome to Earning Bot!\nEarn points, invite friends, and withdraw your earnings!\nYour referral code: <b>{$users[$chat_id]['ref_code']}</b>";
-            sendMessage($chat_id, $msg, getMainKeyboard());
-        }
-
-    } elseif (isset($update['callback_query'])) {
-        $chat_id = $update['callback_query']['message']['chat']['id'];
-        $data = $update['callback_query']['data'];
-
-        if (!isset($users[$chat_id])) {
-            $users[$chat_id] = [
-                'balance' => 0,
-                'last_earn' => 0,
-                'referrals' => 0,
-                'ref_code' => substr(md5($chat_id . time()), 0, 8),
-                'referred_by' => null
-            ];
-        }
-
-        switch ($data) {
-            case 'earn':
-                $time_diff = time() - $users[$chat_id]['last_earn'];
-                if ($time_diff < 60) {
-                    $remaining = 60 - $time_diff;
-                    $msg = "⏳ Please wait $remaining seconds before earning again!";
-                } else {
-                    $earn = 10;
-                    $users[$chat_id]['balance'] += $earn;
-                    $users[$chat_id]['last_earn'] = time();
-                    $msg = "✅ You earned $earn points!\nNew balance: {$users[$chat_id]['balance']}";
-                }
-                break;
-
-            case 'balance':
-                $msg = "💳 Your Balance\nPoints: {$users[$chat_id]['balance']}\nReferrals: {$users[$chat_id]['referrals']}";
-                break;
-
-            case 'leaderboard':
-                $sorted = array_column($users, 'balance');
-                arsort($sorted);
-                $top = array_slice($sorted, 0, 5, true);
-                $msg = "🏆 Top Earners\n";
-                $i = 1;
-                foreach ($top as $id => $bal) {
-                    $msg .= "$i. User $id: $bal points\n";
-                    $i++;
-                }
-                break;
-
-            case 'referrals':
-                $msg = "👥 Referral System\nYour code: <b>{$users[$chat_id]['ref_code']}</b>\nReferrals: {$users[$chat_id]['referrals']}\nInvite link: https://t.me/YOUR_BOT_USERNAME?start={$users[$chat_id]['ref_code']}\n50 points per referral!";
-                break;
-
-            case 'withdraw':
-                $min = 100;
-                if ($users[$chat_id]['balance'] < $min) {
-                    $msg = "🏧 Withdrawal\nMinimum: $min points\nYour balance: {$users[$chat_id]['balance']}\nNeed " . ($min - $users[$chat_id]['balance']) . " more points!";
-                } else {
-                    $amount = $users[$chat_id]['balance'];
-                    $users[$chat_id]['balance'] = 0;
-                    $msg = "🏧 Withdrawal of $amount points requested!\nOur team will process it soon.";
-                    // Add actual withdrawal processing here
-                }
-                break;
-
-            case 'help':
-                $msg = "❓ Help\n💰 Earn: Get 10 points/min\n👥 Refer: 50 points/ref\n🏧 Withdraw: Min 100 points\nUse buttons below to navigate!";
-                break;
-
-            default:
-                $msg = "❓ Unknown option.";
-        }
-
-        sendMessage($chat_id, $msg, getMainKeyboard());
+    switch ($text) {
+        case '/start': cmd_start($chat_id); break;
+        case '/help': cmd_help($chat_id); break;
+        case '/donate': cmd_donate($chat_id); break;
+        case '/status': cmd_status($chat_id); break;
+        case '/crypto': cmd_crypto($chat_id); break;
+        case '/share': cmd_share($chat_id); break;
+        default:
+            sendMessage($chat_id, "❓ Unknown command. Type /help to see options.");
     }
-
-    saveUsers($users);
 }
 
-// =============================
-// Main Entry (Webhook Handler)
-// =============================
+// --- MAIN ENTRY ---
 try {
     $data = file_get_contents("php://input");
     if ($data) {
         $update = json_decode($data, true);
         processUpdate($update);
     } else {
-        echo "Telegram Bot is running...";
+        echo "✅ Planet 47 Bot is alive! 🚀";
     }
 } catch (Exception $e) {
-    logError("Fatal error: " . $e->getMessage());
-    echo "Bot crashed. Check error.log.";
+    echo "Bot crashed: " . $e->getMessage();
 }
+?>
