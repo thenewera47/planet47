@@ -1,11 +1,11 @@
-# .htaccess — route all to index.php
+# .htaccess — route everything to index.php
 Options -Indexes
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [QSA,L]
 
-# PHP logging
+# PHP logging (apache will append to error.log)
 php_flag display_errors Off
 php_flag log_errors On
 php_value error_log /var/www/html/error.log
