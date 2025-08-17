@@ -1,9 +1,11 @@
 {
   "name": "planet47/telegram-bot-php",
-  "description": "Planet 47 Telegram Bot (PHP on Render Docker)",
+  "description": "Planet 47 Telegram Bot (PHP)",
   "type": "project",
-  "license": "MIT",
-  "require": {},
+  "require": {
+    "ext-json": "*",
+    "ext-curl": "*"
+  },
   "autoload": {
     "psr-4": {
       "App\\": "src/"
