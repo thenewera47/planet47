@@ -1,13 +1,12 @@
 {
-  "name": "my/telegram-bot",
-  "description": "Telegram earning bot",
+  "name": "planet47/telegram-bot-php",
+  "description": "Planet 47 Telegram Bot (PHP on Render Docker)",
   "type": "project",
-  "require": {
-    "php": "^8.2"
-  },
+  "license": "MIT",
+  "require": {},
   "autoload": {
     "psr-4": {
-      "Bot\\": "src/"
+      "App\\": "src/"
     }
   }
 }
