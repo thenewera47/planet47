@@ -1,6 +1,6 @@
 <?php
 // Telegram Bot Config
-$BOT_TOKEN = "8471270154:AAGsMCHUA3d5IxNF0JgvDXRzpDCLaahG_Dc";
+$BOT_TOKEN = 'Place_Your_Token_Here');
 $API_URL   = "https://api.telegram.org/bot$BOT_TOKEN/";
 
 // BharatPe UPI ID
@@ -137,3 +137,4 @@ try {
 } catch (Exception $e) {
     file_put_contents($ERROR_LOG, date("Y-m-d H:i:s")." ".$e->getMessage()."\n", FILE_APPEND);
 }
+
