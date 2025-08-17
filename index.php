@@ -1,29 +1,34 @@
 <?php
+// ===============================
 // Telegram Bot Config
-$BOT_TOKEN = 'Place_Your_Token_Here');
+// ===============================
+$BOT_TOKEN = "Place_Your_Token_Here"; // <-- Replace with your Bot Token
 $API_URL   = "https://api.telegram.org/bot$BOT_TOKEN/";
 
-// BharatPe UPI ID
+// BharatPe UPI
 $BHARATPE_UPI = "BHARATPE.8Y0Z0M5P0J89642@fbpe";
 
 // Storage
 $USERS_FILE = __DIR__ . "/users.json";
 $ERROR_LOG  = __DIR__ . "/error.log";
 
-// Load JSON safely
+// ===============================
+// JSON Storage Helpers
+// ===============================
 function load_users() {
     global $USERS_FILE;
     if (!file_exists($USERS_FILE)) return [];
     return json_decode(file_get_contents($USERS_FILE), true) ?? [];
 }
 
-// Save JSON safely
 function save_users($data) {
     global $USERS_FILE;
     file_put_contents($USERS_FILE, json_encode($data, JSON_PRETTY_PRINT));
 }
 
-// Telegram Send Message
+// ===============================
+// Telegram Send Message & Photo
+// ===============================
 function sendMessage($chat_id, $text, $keyboard = null) {
     global $API_URL;
     $payload = [
@@ -37,7 +42,22 @@ function sendMessage($chat_id, $text, $keyboard = null) {
     file_get_contents($API_URL . "sendMessage?" . http_build_query($payload));
 }
 
-// Handle commands
+function sendPhoto($chat_id, $photo_url, $caption = null) {
+    global $API_URL;
+    $payload = [
+        "chat_id" => $chat_id,
+        "photo"   => $photo_url,
+    ];
+    if ($caption) {
+        $payload["caption"] = $caption;
+        $payload["parse_mode"] = "HTML";
+    }
+    file_get_contents($API_URL . "sendPhoto?" . http_build_query($payload));
+}
+
+// ===============================
+// Command Handler
+// ===============================
 function processCommand($chat_id, $command) {
     global $BHARATPE_UPI;
 
@@ -59,12 +79,12 @@ function processCommand($chat_id, $command) {
             break;
 
         case "/donate":
-            $msg = "💝 Support the project!\n\n".
-                   "📌 Pay using BharatPe UPI:\n<code>$BHARATPE_UPI</code>\n\n".
+            $msg = "💝 <b>Support Planet 47 Project</b>\n\n".
+                   "📌 Pay securely via BharatPe UPI:\n<code>$BHARATPE_UPI</code>\n\n".
                    "📷 Scan this QR to donate:";
             sendMessage($chat_id, $msg);
-            // Send QR image (example, replace with your hosted QR image URL)
-            file_get_contents("https://api.telegram.org/bot".BOT_TOKEN."/sendPhoto?chat_id=$chat_id&photo=https://i.ibb.co/42yVpG7/bharatpe-qr.png");
+            // Send BharatPe QR Image (replace with your actual QR if needed)
+            sendPhoto($chat_id, "https://i.ibb.co/42yVpG7/bharatpe-qr.png", "🙏 Thank you for supporting us!");
             return;
 
         case "/status":
@@ -85,11 +105,15 @@ function processCommand($chat_id, $command) {
     sendMessage($chat_id, $msg);
 }
 
-// Get Crypto Prices (Top 10 in USD/INR)
+// ===============================
+// Fetch Crypto Prices
+// ===============================
 function getCryptoPrices() {
     try {
         $url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false";
         $data = json_decode(file_get_contents($url), true);
+
+        if (!$data) return "⚠️ Error fetching crypto data.";
 
         $out = "₿ <b>Top 10 Cryptos</b>\n\n";
         foreach ($data as $coin) {
@@ -105,7 +129,9 @@ function getCryptoPrices() {
     }
 }
 
-// Get Indian Market Prices
+// ===============================
+// Fetch Indian Market Prices
+// ===============================
 function getMarketPrices() {
     $markets = [
         "^NSEI" => "NIFTY 50",
@@ -126,7 +152,9 @@ function getMarketPrices() {
     return $out;
 }
 
-// --- Main ---
+// ===============================
+// Main Entry
+// ===============================
 try {
     $update = json_decode(file_get_contents("php://input"), true);
     if (isset($update["message"])) {
@@ -135,6 +163,5 @@ try {
         processCommand($chat_id, $text);
     }
 } catch (Exception $e) {
-    file_put_contents($ERROR_LOG, date("Y-m-d H:i:s")." ".$e->getMessage()."\n", FILE_APPEND);
+    file_put_contents($GLOBALS["ERROR_LOG"], date("Y-m-d H:i:s")." ".$e->getMessage()."\n", FILE_APPEND);
 }
-
