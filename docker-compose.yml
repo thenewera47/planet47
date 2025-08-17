@@ -1,11 +1,14 @@
-version: '3.8'
+version: "3.9"
 services:
-  telegram-bot:
+  web:
     build: .
-    container_name: telegram_bot
+    container_name: planet47-php-bot
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+      - PORT=8080
     ports:
-      - "8080:80"
-    restart: always
+      - "8080:8080"
     volumes:
+      # Persist data locally so users.json & error.log survive rebuilds
       - ./users.json:/var/www/html/users.json
       - ./error.log:/var/www/html/error.log
