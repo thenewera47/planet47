@@ -236,7 +236,7 @@ function cmd_share(int $chat_id) { ensure_user($chat_id); log_user_command($chat
         "NIFTY_FIN_SERVICE.NS" => "FINNIFTY",
         "^NSEMDCP50" => "MIDCAPNIFTY",
         "^BSESN" => "BSE SENSEX",
-        "BSEBANK.BO" => "BSE BANKEX"
+        "^BSEBANK" => "BSE BANKEX" // fixed symbol
     ];
     $lines = [];
     foreach ($indices as $sym => $name) {
@@ -280,3 +280,4 @@ try {
     @file_put_contents(ERROR_LOG, "[".date('c')."] Fatal: " . $e->getMessage() . "\n", FILE_APPEND);
     http_response_code(500); echo 'Error';
 }
+
