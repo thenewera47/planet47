@@ -1,6 +1,6 @@
 {
   "name": "planet47/telegram-bot-php",
-  "description": "Planet 47 Telegram Bot (PHP)",
+  "description": "Planet 47 Telegram Bot (PHP) - Render Docker",
   "type": "project",
   "require": {
     "ext-json": "*",
