@@ -1,8 +1,15 @@
-# Enable rewrite engine
-RewriteEngine On
+# Disable directory listing
+Options -Indexes
 
-# Deny direct access to users.json and error.log
-<FilesMatch "^(users\.json|error\.log)$">
-    Order allow,deny
-    Deny from all
-</FilesMatch>
+# Security & clean routing
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^ index.php [L]
+</IfModule>
+
+# Production PHP flags
+php_flag display_errors Off
+php_flag log_errors On
+php_value error_log /var/www/html/error.log
