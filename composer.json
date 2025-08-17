@@ -1,8 +1,9 @@
 {
-  "name": "planet47/telegram-bot",
-  "description": "Planet 47 Telegram Bot on Render",
+  "name": "planet47/telegram-bot-php",
+  "description": "Planet 47 Telegram Bot (PHP)",
   "type": "project",
   "require": {
-    "php": "^8.2"
+    "ext-json": "*",
+    "ext-curl": "*"
   }
 }
